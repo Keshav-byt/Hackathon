@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Charging Station Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-charging-station"></i> EV Charging Station Predictor</h1>
+        <div class="card">
+            <form id="prediction-form">
+                <div class="form-group">
+                    <label for="seater">
+                        <i class="fas fa-users"></i> Select Vehicle Type
+                    </label>
+                    <select id="seater" required>
+                        <option value="" disabled selected>Select a vehicle type</option>
+                        <option value="2">2-Seater</option>
+                        <option value="5">5-Seater</option>
+                        <option value="6">6-Seater</option>
+                        <option value="7">7-Seater</option>
+                    </select>
+                </div>                
+                <div class="form-group">
+                    <label for="traffic_flow">
+                        <i class="fas fa-car-side"></i> Traffic Flow
+                    </label>
+                    <select id="traffic_flow" required>
+                        <option value="" disabled selected>Select traffic flow</option>
+                        <option value="high">High Traffic</option>
+                        <option value="medium">Medium Traffic</option>
+                        <option value="low">No Traffic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="existing_stations">
+                        <i class="fas fa-plug"></i> Existing Stations
+                    </label>
+                    <input id="existing_stations" type="number" placeholder="e.g., 10" required>
+                </div>
+                <div class="form-group">
+                    <label for="ev_density">
+                        <i class="fas fa-car-battery"></i> EV Density
+                    </label>
+                    <input id="ev_density" type="number" placeholder="e.g., 500" required>
+                </div>
+                <button type="submit">Predict <i class="fas fa-bolt"></i></button>
+            </form>
+        </div>
+        <div id="result" class="hidden">
+            <h2>Prediction Result</h2>
+            <p>Optimal Location Score: <span id="score"></span></p>
+            <div id="gauge"></div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gauge.js/1.3.7/gauge.min.js"></script>
+    <script src="static/script.js"></script>
+</body>
+</html>

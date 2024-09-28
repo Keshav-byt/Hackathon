@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'  # Needed for flash messages
 
 # Load and prepare data
 def load_data():
@@ -13,14 +14,13 @@ def load_data():
     return pd.DataFrame({
         'population_density': np.random.randint(100, 10000, 1000),
         'traffic_flow': np.random.randint(1000, 100000, 1000),
-        'existing_stations': np.random.randint(0, 20, 1000),
-        'ev_density': np.random.randint(10, 1000, 1000),
+        'mileage': np.random.randint(0, 1000, 1000),  # Replacing city with mileage
+        'ev_density': np.random.randint(0, 100, 1000),
         'optimal_location_score': np.random.randint(0, 100, 1000)
     })
 
 # Train a RandomForest model
 def train_model(X, y):
-    # Split the dataset into training and test sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Feature scaling
@@ -30,23 +30,46 @@ def train_model(X, y):
     
     # Initialize the RandomForestRegressor model
     model = RandomForestRegressor(n_estimators=100, random_state=42)
-    
-    # Train the model
     model.fit(X_train_scaled, y_train)
     
-    # Return the trained model and the scaler
     return model, scaler
 
 # Load data and train model
 data = load_data()
-X = data[['population_density', 'traffic_flow', 'existing_stations', 'ev_density']]
+X = data[['population_density', 'traffic_flow', 'mileage', 'ev_density']]  # Updated to include mileage
 y = data['optimal_location_score']
 model, scaler = train_model(X, y)
 
 @app.route('/')
 def home():
-    # Render the index.html page
     return render_template('index.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@app.route('/support')
+def support():
+    return render_template('support.html')
+
+@app.route('/submit_support', methods=['POST'])
+def submit_support():
+    # Get data from the support form
+    name = request.form['name']
+    email = request.form['email']
+    issue = request.form['issue']
+    message = request.form['message']
+
+    # Here, you would typically store the support request in a database
+    # or send it to a support email. For now, let's just print it to the console.
+    print(f'Support Request from {name}:')
+    print(f'Email: {email}')
+    print(f'Issue: {issue}')
+    print(f'Message: {message}')
+
+    # Flash a success message and redirect to the support page
+    flash('Your support request has been submitted successfully. Our team will get back to you shortly.', 'success')
+    return redirect(url_for('support'))
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -54,7 +77,7 @@ def predict():
     features = [
         float(request.form['population_density']),
         float(request.form['traffic_flow']),
-        float(request.form['existing_stations']),
+        float(request.form['mileage']),  # Replaced nearest_city with mileage
         float(request.form['ev_density'])
     ]
     
@@ -64,7 +87,6 @@ def predict():
     # Make the prediction using the trained model
     prediction = model.predict(features_scaled)[0]
     
-    # Return the prediction result as JSON
     return jsonify({'prediction': round(prediction, 2)})
 
 if __name__ == '__main__':

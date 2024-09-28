@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Existing code for prediction form and gauge
     const form = document.getElementById('prediction-form');
     const resultDiv = document.getElementById('result');
     const scoreSpan = document.getElementById('score');
+    const evDensitySlider = document.getElementById('ev_density');
+    const evDensityValue = document.getElementById('ev_density_value');
     let gauge;
 
     // Initialize gauge
@@ -33,14 +36,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initGauge();
 
+    // Update slider value
+    evDensitySlider.addEventListener('input', function() {
+        evDensityValue.textContent = evDensitySlider.value + '%';
+    });
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const formData = new FormData();
-        formData.append('population_density', document.getElementById('population_density').value);
-        formData.append('traffic_flow', document.getElementById('traffic_flow').value);
-        formData.append('existing_stations', document.getElementById('existing_stations').value);
-        formData.append('ev_density', document.getElementById('ev_density').value);
+        const formData = new FormData(form);  // Automatically gathers all inputs
 
         fetch('/predict', {
             method: 'POST',
@@ -60,63 +64,31 @@ document.addEventListener('DOMContentLoaded', function() {
             resultDiv.classList.add('fade-in');
         });
     });
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('population_density', document.getElementById('population_density').value);
-        formData.append('traffic_flow', document.getElementById('traffic_flow').value);  // Now a dropdown value
-        formData.append('remaining_power', document.getElementById('remaining_power').value);
-        formData.append('ev_density', document.getElementById('ev_density').value);
-    
-        fetch('/predict', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            scoreSpan.textContent = data.prediction;
-            gauge.set(data.prediction);
-            resultDiv.classList.remove('hidden');
-            resultDiv.classList.add('fade-in');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            resultDiv.innerHTML = '<p class="error">An error occurred while making the prediction.</p>';
-            resultDiv.classList.remove('hidden');
-            resultDiv.classList.add('fade-in');
+
+    // Contact form submission
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const contactData = new FormData(contactForm);
+            
+            fetch('submit_contact.php', {
+                method: 'POST',
+                body: contactData
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message); // Show confirmation message
+                contactForm.reset(); // Reset the form after submission
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending your message.');
+            });
         });
-    });
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('seater', document.getElementById('seater').value);  // Use seater instead of population_density
-        formData.append('traffic_flow', document.getElementById('traffic_flow').value);
-        formData.append('remaining_power', document.getElementById('remaining_power').value);
-        formData.append('ev_density', document.getElementById('ev_density').value);
-    
-        fetch('/predict', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            scoreSpan.textContent = data.prediction;
-            gauge.set(data.prediction);
-            resultDiv.classList.remove('hidden');
-            resultDiv.classList.add('fade-in');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            resultDiv.innerHTML = '<p class="error">An error occurred while making the prediction.</p>';
-            resultDiv.classList.remove('hidden');
-            resultDiv.classList.add('fade-in');
-        });
-    });
-    
-    
-    // Add input animations
+    }
+
+    // Input animations for prediction form
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {

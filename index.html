@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Charging Station Predictor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="static/styles.css">
+    <title>EV-Charging Assist</title>
 </head>
 <body>
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="static/Logo.jpeg" alt="Logo" class="logo">
+                <span class="team-name">codingGeeks</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <div class="container">
-        <h1><i class="fas fa-charging-station"></i> EV Charging Station Predictor</h1>
+        <h1>Welcome to ChargeTrail!</h1>
         <div class="card">
             <form id="prediction-form">
                 <div class="form-group">
@@ -35,28 +49,30 @@
                         <option value="low">No Traffic</option>
                     </select>
                 </div>
+                <!-- Updated form field for Mileage in index.html -->
                 <div class="form-group">
-                    <label for="existing_stations">
-                        <i class="fas fa-plug"></i> Existing Stations
+                    <label for="mileage">
+                        <i class="fas fa-road"></i> Mileage (in km)
                     </label>
-                    <input id="existing_stations" type="number" placeholder="e.g., 10" required>
+                    <input id="mileage" name="mileage" type="number" min="0" placeholder="Enter mileage" required>
                 </div>
                 <div class="form-group">
                     <label for="ev_density">
-                        <i class="fas fa-car-battery"></i> EV Density
+                        <i class="fas fa-car-battery"></i> EV Density (%)
                     </label>
-                    <input id="ev_density" type="number" placeholder="e.g., 500" required>
-                </div>
+                    <input id="ev_density" type="range" min="0" max="100" value="50" oninput="updateDensityValue(this.value)">
+                    <span id="ev_density_value">50%</span>
+                </div>                                                                
                 <button type="submit">Predict <i class="fas fa-bolt"></i></button>
             </form>
         </div>
         <div id="result" class="hidden">
             <h2>Prediction Result</h2>
             <p>Optimal Location Score: <span id="score"></span></p>
-            <div id="gauge"></div>
+            <canvas id="gauge"></canvas>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gauge.js/1.3.7/gauge.min.js"></script>
-    <script src="script.js"></script>
+    <script src="static/script.js"></script>
 </body>
-</html>
+</html> 
